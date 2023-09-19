@@ -90,9 +90,9 @@ class MainActivity : AppCompatActivity() {
 
             }
             if (currentDeciSecond == 0 && currentCountdownDeciSecond < 31 && currentCountdownDeciSecond % 10 == 0){
-                val toneType = if(currentCountdownDeciSecond == 0) ToneGenerator.TONE_CDMA_HIGH_L else
+                val toneType = if(currentCountdownDeciSecond == 0) ToneGenerator.TONE_CDMA_ABBR_ALERT else ToneGenerator.TONE_CDMA_ANSWER
                 ToneGenerator(AudioManager.STREAM_ALARM, ToneGenerator.MAX_VOLUME)
-                    .startTone(ToneGenerator.TONE_CDMA_ANSWER, 100)
+                    .startTone(toneType, 100)
             }
 
 
