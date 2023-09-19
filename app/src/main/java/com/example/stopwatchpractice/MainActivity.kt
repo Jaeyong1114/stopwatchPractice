@@ -2,6 +2,8 @@ package com.example.stopwatchpractice
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.media.AudioManager
+import android.media.ToneGenerator
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -53,6 +55,7 @@ class MainActivity : AppCompatActivity() {
         initCountdownViews()
 
     }
+
     private fun initCountdownViews() {
         binding.countdownTextView.text = String.format("%02d", countdownSecond)
         binding.countdownProgressBar.progress = 100
@@ -72,7 +75,7 @@ class MainActivity : AppCompatActivity() {
 
                     binding.tickTextView.text = deciSeconds.toString()
 
-                    binding.countdownGroup.isVisible=false
+                    binding.countdownGroup.isVisible = false
                 }
             } else {
                 currentCountdownDeciSecond -= 1
@@ -80,12 +83,16 @@ class MainActivity : AppCompatActivity() {
                 val progress = (currentCountdownDeciSecond / (countdownSecond * 10f)) * 100
 
                 binding.root.post {
-                    binding.countdownTextView.text  = String.format("%02d", seconds)
+                    binding.countdownTextView.text = String.format("%02d", seconds)
                     binding.countdownProgressBar.progress = progress.toInt()
                 } //runOnUiThread 방법이아닌 뷰에서 포스트 하는 방법.  뷰는 어떤 뷰여도 상관없음
 
 
-
+            }
+            if (currentDeciSecond == 0 && currentCountdownDeciSecond < 31 && currentCountdownDeciSecond % 10 == 0){
+                val toneType = if(currentCountdownDeciSecond == 0) ToneGenerator.TONE_CDMA_HIGH_L else
+                ToneGenerator(AudioManager.STREAM_ALARM, ToneGenerator.MAX_VOLUME)
+                    .startTone(ToneGenerator.TONE_CDMA_ANSWER, 100)
             }
 
 
@@ -105,6 +112,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.countdownGroup.isVisible = true
         initCountdownViews()
+        binding.lapContainerLinearLayout.removeAllViews()
 
     }
 
@@ -116,21 +124,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun lap() {
+        if (currentDeciSecond == 0) return
         val container = binding.lapContainerLinearLayout
         TextView(this).apply {
             textSize = 20f
             gravity = Gravity.CENTER
             val minutes = currentDeciSecond.div(10) / 60
-            val  seconds = currentDeciSecond.div(10) % 60
+            val seconds = currentDeciSecond.div(10) % 60
             val deciSeconds = currentDeciSecond % 10
-            text = container.childCount.inc().toString() +". " + String.format(
+            text = container.childCount.inc().toString() + ". " + String.format(
                 "%02d:%02d %01d", minutes, seconds, deciSeconds
             )
 
             setPadding(30)
 
-        }.let {
-            labTextView -> container.addView(labTextView, 0)
+        }.let { labTextView ->
+            container.addView(labTextView, 0)
         }
 
     }
